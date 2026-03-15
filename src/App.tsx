@@ -14,10 +14,26 @@
 import type React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
-import { Home, Building2 } from 'lucide-react';
+import { Home, Building2, Scale } from 'lucide-react'; // Agregamos el ícono Scale
 import { HomePage } from '@/pages/HomePage';
 import { NewPropertyPage } from '@/pages/NewPropertyPage';
 import { PropertyDetailPage } from '@/pages/PropertyDetailPage';
+import { ComparePage } from '@/pages/ComparePage'; // Importamos la página
+import { CompareProvider, useCompare } from '@/context/CompareContext'; // Importamos el contexto
+
+// Sub-componente para el botón de navegación que lee el contexto
+function CompareNavButton() {
+  const { compareList } = useCompare();
+  return (
+    <Link
+      to="/compare"
+      className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <Scale className="h-4 w-4" />
+      Comparar {compareList.length > 0 && <span className="bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5 ml-1">{compareList.length}</span>}
+    </Link>
+  );
+}
 
 /**
  * Componente principal de la aplicación.
@@ -29,7 +45,7 @@ import { PropertyDetailPage } from '@/pages/PropertyDetailPage';
  */
 function App(): React.ReactElement {
   return (
-    <>
+    <CompareProvider>
       {/* Toaster para notificaciones - fuera del layout para evitar problemas de z-index */}
       <Toaster position="top-right" richColors closeButton />
 
@@ -54,6 +70,8 @@ function App(): React.ReactElement {
                 <Home className="h-4 w-4" />
                 Inicio
               </Link>
+              {/* Insertamos nuestro nuevo botón de comparar aquí */}
+              <CompareNavButton />
             </nav>
           </div>
         </header>
@@ -74,6 +92,9 @@ function App(): React.ReactElement {
 
             {/* Página de detalle de propiedad */}
             <Route path="/property/:id" element={<PropertyDetailPage />} />
+
+            {/* Agregamos la nueva ruta de comparación */}
+            <Route path="/compare" element={<ComparePage />} />
 
             {/* Ruta 404 - Página no encontrada */}
             <Route
@@ -108,7 +129,7 @@ function App(): React.ReactElement {
           </div>
         </footer>
       </div>
-    </>
+    </CompareProvider>
   );
 }
 
